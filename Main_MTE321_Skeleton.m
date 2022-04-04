@@ -7,11 +7,8 @@
 
 % Enter all independant variables in appropriate units
 % eg r2, ddtheta2, Ig:
-r2 = 3;
 dtheta2 = 40;
 ddtheta2 = 0;
-OB = 5;
-BC = 20;
 
 % Initialize arrays to collect desired values as needed
 M12 = [];
@@ -36,6 +33,13 @@ shaking_moment = zeros(1, 360);
 
 M = cell(360, 1);
 
+F12x_list = zeros(1, 360);
+F12y_list = zeros(1, 360);
+F23x_list = zeros(1, 360);
+F23y_list = zeros(1, 360);
+F13_list = zeros(1, 360);
+M12_list = zeros(1, 360);
+
 
 
 % Might want to use the loop to iterate through the values of theta to 
@@ -54,7 +58,7 @@ for theta2 = 0:1:360
     ro3y = 0.05*sind(theta2) + 0.10*sind(theta3);
     r3 = sqrt(ro3x^2 + ro3y^2);
 
-    dtheta3 = ((0.05*dtheta2)/0.20)*cosd(theta2 - theta3);
+    dtheta3 = ((0.05*dtheta2)/r3)*cosd(theta2 - theta3);
     ddtheta3 = -(0.05/r3)*(dtheta2^2)*sind(theta2 - theta3);
 
     theta3_list(theta2 + 1) = theta3;
@@ -68,7 +72,7 @@ for theta2 = 0:1:360
     dCy_list(theta2 +1) = 0.05*dtheta2*cosd(theta2) + 0.20*dtheta3*cosd(theta3);
 
     ddCx_list(theta2 +1) = -0.05*(dtheta2^2)*cosd(theta2) - 0.20*(dtheta3^2)*cosd(theta3) - 0.20*ddtheta3*sind(theta3);
-    ddCy_list(theta2 +1) = -0.05*(dtheta2^2)*sind(theta2) - 0.20*(ddtheta3^2)*sind(theta3) + 0.20*ddtheta3*cosd(theta3);
+    ddCy_list(theta2 +1) = -0.05*(dtheta2^2)*sind(theta2) - 0.20*(dtheta3^2)*sind(theta3) + 0.20*ddtheta3*cosd(theta3);
 
     dR3 = 0.05*dtheta2*sind(theta2 - theta3);
    
@@ -112,12 +116,20 @@ for theta2 = 0:1:360
     
     M{theta2 + 1} = F;
 
+    F12x_list(theta2 + 1) = F(1, 1);
+    F12y_list(theta2 + 1) = F(2, 1);
+    F23x_list(theta2 + 1) = F(3, 1);
+    F23y_list(theta2 + 1) = F(4, 1);
+    F13_list(theta2 + 1) = F(5, 1);
+    M12_list(theta2 + 1) = F(6, 1);
+
     shaking_x = F(1, 1) + F(5, 1)*cosd(theta3);
     shaking_y = F(2, 1) + F(5, 1)*sind(theta3);
-    shaking_mag = sqrt(shaking_x^2 + shaking_y^2);
+    shaking_force(theta2 + 1) = sqrt(shaking_x^2 + shaking_y^2);
     shaking_angle = atan2d(shaking_y, shaking_x);
 
-    shaking_moment = F(5, 1)*cosd(theta3)*0.12 + F(5, 1)*sind(theta3)*0.04 + F(6, 1);
+
+    shaking_moment(theta2 + 1) = F(5, 1)*cosd(theta3)*0.12 + F(5, 1)*sind(theta3)*0.04 - F(6, 1);
     
     % Store data in predeclared arrays
     % NOTE: You need to fill in the brackets of the function calls to match the
@@ -133,57 +145,125 @@ for theta2 = 0:1:360
 end
 
 % % Plot all desired deliverables:
-% x = 0 : 1 : 360;
-% axis auto;
-% grid on;
-% 
+x = 0 : 1 : 360;
+axis auto;
+grid on;
+figure_num = 1;
 % % Part A, Displacement, Linear Velocity and Linear Accelerations of C
-% figure_num = 1;
+
+figure(figure_num);
+plot3(x, Cx_list, Cy_list);
+grid on;
+title("Displacement of C -vs- \theta_2");
+xlabel('\theta_2  [degree]')
+ylabel('X Position')
+zlabel('Y Position')
+view(90, 0);
+
+figure_num = figure_num + 1;
+figure(figure_num);
+plot(x, dCx_list, x, dCy_list);
+grid on;
+legend('C_x', 'C_y'); 
+title("Linear Velocity of C -vs- \theta_2");
+xlabel('\theta_2  [degree]')
+ylabel('Linear Velocity [units?]')
+
+figure_num = figure_num + 1;
+figure(figure_num);
+plot(x, ddCx_list, x, ddCy_list);
+legend('C_x', 'C_y'); 
+title("Linear Acceleration of C -vs- \theta_2");
+grid on;
+xlabel('\theta_2  [degree]')
+ylabel('Linear Accelerattion [units?]')
+
+
+% Part B, Angular Velocity and Angular Acceleration of link 3,
+figure_num = figure_num + 1;
+figure(figure_num);
+plot(x, dtheta3_list);
+title("Angular Velocity of Link 3 -vs- \theta_2");
+grid on;
+xlabel('\theta_2  [degree]')
+ylabel('d\theta_3  [?]')
+
+
+figure_num = figure_num + 1;
+figure(figure_num);
+plot(x, ddtheta3_list);
+title("Angular Acceleration of Link 3 -vs- \theta_2");
+grid on;
+xlabel('\theta_2  [degree]')
+ylabel('dd\theta_3  [?]')
+
+
+% Part C
+figure_num = figure_num + 1;
+figure(figure_num);
+plot(x, F12x_list);
+title("F12x -vs- \theta_2");
+grid on;
+xlabel('\theta_2  [degree]')
+ylabel('F12x  [N]')
+
+figure_num = figure_num + 1;
+figure(figure_num);
+plot(x, F12y_list);
+title("F12y -vs- \theta_2");
+grid on;
+xlabel('\theta_2  [degree]')
+ylabel('F12y  [N]')
+
+figure_num = figure_num + 1;
+figure(figure_num);
+plot(x, F23x_list);
+title("F23x -vs- \theta_2");
+grid on;
+xlabel('\theta_2  [degree]')
+ylabel('F23x  [N]')
+
+figure_num = figure_num + 1;
+figure(figure_num);
+plot(x, F23y_list);
+title("F23y -vs- \theta_2");
+grid on;
+xlabel('\theta_2  [degree]')
+ylabel('F23y  [N]')
+
+figure_num = figure_num + 1;
+figure(figure_num);
+plot(x, F13_list);
+title("F13 -vs- \theta_2");
+grid on;
+xlabel('\theta_2  [degree]')
+ylabel('F13  [N]')
+
+figure_num = figure_num + 1;
+figure(figure_num);
+plot(x, M12_list);
+title("M12 -vs- \theta_2");
+grid on;
+xlabel('\theta_2  [degree]')
+ylabel('M12  [N]')
+
+
+% Part D
+% figure_num = figure_num + 1;
 % figure(figure_num);
-% plot3(x, Cx_list, Cy_list);
+% plot(x, shaking_force);
+% title("Shaking Force -vs- \theta_2");
 % grid on;
-% title("Displacement of C -vs- \theta_2");
 % xlabel('\theta_2  [degree]')
-% ylabel('X Position')
-% zlabel('Y Position')
-% view(90, 0);
+% ylabel('Shaking Force  [N]')
 % 
 % figure_num = figure_num + 1;
 % figure(figure_num);
-% plot(x, dCx_list, x, dCy_list);
-% grid on;
-% legend('C_x', 'C_y'); 
-% title("Linear Velocity of C -vs- \theta_2");
-% xlabel('\theta_2  [degree]')
-% ylabel('Linear Velocity [units?]')
-% 
-% figure_num = figure_num + 1;
-% figure(figure_num);
-% plot(x, ddCx_list, x, ddCy_list);
-% legend('C_x', 'C_y'); 
-% title("Linear Acceleration of C -vs- \theta_2");
+% plot(x, shaking_moment);
+% title("Shaking Moment -vs- \theta_2");
 % grid on;
 % xlabel('\theta_2  [degree]')
-% ylabel('Linear Accelerattion [units?]')
-% 
-% 
-% % Part B, Angular Velocity and Angular Acceleration of link 3,
-% figure_num = figure_num + 1;
-% figure(figure_num);
-% plot(x, dtheta3_list);
-% title("Angular Velocity of Link 3 -vs- \theta_2");
-% grid on;
-% xlabel('\theta_2  [degree]')
-% ylabel('d\theta_3  [?]')
-% 
-% 
-% figure_num = figure_num + 1;
-% figure(figure_num);
-% plot(x, ddtheta3_list);
-% title("Angular Acceleration of Link 3 -vs- \theta_2");
-% grid on;
-% xlabel('\theta_2  [degree]')
-% ylabel('dd\theta_3  [?]')
+% ylabel('Shaking Moment  [N*m]')
 
 %figure (2)
 %plot(theta2_list,M12)
