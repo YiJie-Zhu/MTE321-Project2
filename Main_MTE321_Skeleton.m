@@ -31,6 +31,9 @@ a2y_list = zeros(1, 360);
 a3x_list = zeros(1, 360);
 a3y_list = zeros(1, 360);
 
+shaking_force = zeros(1, 360);
+shaking_moment = zeros(1, 360);
+
 M = cell(360, 1);
 
 
@@ -45,40 +48,40 @@ M = cell(360, 1);
 
 for theta2 = 0:1:360
     
-    theta3 = atan2d((12-5*sind(theta2)), (4-5*cosd(theta2)));
+    theta3 = atan2d((0.12-0.05*sind(theta2)), (0.04-0.05*cosd(theta2)));
 
-    ro3x = 5*cosd(theta2) + 10*cosd(theta3);
-    ro3y = 5*sind(theta2) + 10*sind(theta3);
+    ro3x = 0.05*cosd(theta2) + 0.10*cosd(theta3);
+    ro3y = 0.05*sind(theta2) + 0.10*sind(theta3);
     r3 = sqrt(ro3x^2 + ro3y^2);
 
-    dtheta3 = ((5*dtheta2)/20)*cosd(theta2 - theta3);
-    ddtheta3 = -(5/20)*(dtheta2^2)*sind(theta2 - theta3);
+    dtheta3 = ((0.05*dtheta2)/0.20)*cosd(theta2 - theta3);
+    ddtheta3 = -(0.05/r3)*(dtheta2^2)*sind(theta2 - theta3);
 
     theta3_list(theta2 + 1) = theta3;
     dtheta3_list(theta2 + 1) = dtheta3;
     ddtheta3_list(theta2 + 1) = ddtheta3;
 
-    Cx_list(theta2 + 1) = 5*cosd(theta2) + 20*cosd(theta3);
-    Cy_list(theta2 + 1) = 5*sind(theta2) + 20*sind(theta3);
+    Cx_list(theta2 + 1) = 0.05*cosd(theta2) + 0.20*cosd(theta3);
+    Cy_list(theta2 + 1) = 0.05*sind(theta2) + 0.20*sind(theta3);
 
-    dCx_list(theta2 +1) = -5*dtheta2*sind(theta2) - 20*dtheta3*sind(theta3);
-    dCy_list(theta2 +1) = 5*dtheta2*cosd(theta2) + 20*dtheta3*cosd(theta3);
+    dCx_list(theta2 +1) = -0.05*dtheta2*sind(theta2) - 0.20*dtheta3*sind(theta3);
+    dCy_list(theta2 +1) = 0.05*dtheta2*cosd(theta2) + 0.20*dtheta3*cosd(theta3);
 
-    ddCx_list(theta2 +1) = -5*(dtheta2^2)*cosd(theta2) - 20*(dtheta3^2)*cosd(theta3) - 20*ddtheta3*sind(theta3);
-    ddCy_list(theta2 +1) = -5*(dtheta2^2)*sind(theta2) - 20*(ddtheta3^2)*sind(theta3) + 20*ddtheta3*cosd(theta3);
+    ddCx_list(theta2 +1) = -0.05*(dtheta2^2)*cosd(theta2) - 0.20*(dtheta3^2)*cosd(theta3) - 0.20*ddtheta3*sind(theta3);
+    ddCy_list(theta2 +1) = -0.05*(dtheta2^2)*sind(theta2) - 0.20*(ddtheta3^2)*sind(theta3) + 0.20*ddtheta3*cosd(theta3);
 
-    dR3 = 5*dtheta2*sind(theta2 - theta3);
+    dR3 = 0.05*dtheta2*sind(theta2 - theta3);
    
     % Enter the variables you want to calculated at every iteration
     % eg:
 
-    vo3x = -5*dtheta2*sind(theta2) - 10*dtheta3*sind(theta3);
-    vo3y = 5*dtheta2*cosd(theta2) + 10*dtheta3*cosd(theta3);
+    vo3x = -0.05*dtheta2*sind(theta2) - 0.10*dtheta3*sind(theta3);
+    vo3y = 0.05*dtheta2*cosd(theta2) + 0.10*dtheta3*cosd(theta3);
 
-    a2y = -2.5*(dtheta2^2)*sind(theta2);
-    a2x = -2.5*(dtheta2^2)*cosd(theta2);
-    a3x = -5*(dtheta2^2)*cosd(theta2) - 10*(dtheta3^2)*cosd(theta3) - 10*ddtheta3*sind(theta3);
-    a3y = -5*(dtheta2^2)*sind(theta2) - 10*(dtheta3^2)*sind(theta3) + 10*ddtheta3*cosd(theta3);
+    a2y = -0.025*(dtheta2^2)*sind(theta2);
+    a2x = -0.025*(dtheta2^2)*cosd(theta2);
+    a3x = -0.05*(dtheta2^2)*cosd(theta2) - 0.10*(dtheta3^2)*cosd(theta3) - 0.10*ddtheta3*sind(theta3);
+    a3y = -0.05*(dtheta2^2)*sind(theta2) - 0.10*(dtheta3^2)*sind(theta3) + 0.10*ddtheta3*cosd(theta3);
 
     a2x_list(theta2+1) = a2x;
     a2y_list(theta2+1) = a2y;
@@ -94,13 +97,13 @@ for theta2 = 0:1:360
     % you dont have to type it all out here. But you are free to do as you
     % wish.
 
-    B = [2.65*a2x; 2.65*a2y; 0; 10.6*a3x; 10.6*a3y; Io*ddtheta3];
+    B = [0.00265*a2x; 0.00265*a2y; 0; 0.0106*a3x; 0.0106*a3y; Io*ddtheta3];
     A = [-1 0 1 0 0 0;
          0 -1 0 1 0 0;
-         0 0 -5*sind(theta2) 5*cosd(theta2) 0 1;
+         0 0 -0.05*sind(theta2) 0.05*cosd(theta2) 0 1;
          0 0 -1 0 -cosd(theta3) 0;
          0 0 0 -1 -sind(theta3) 0;
-         0 0 -10*sind(theta3) -10*cosd(theta3) cosd(theta3)*(sind(theta3)*(r3-10))+sind(theta3)*(cosd(theta2)*(r3-10)) 0
+         0 0 -0.10*sind(theta3) -0.10*cosd(theta3) 2*sind(theta3)*cosd(theta3)*(r3-0.1) 0
         ];
 
     %B = get_ma_vector();
@@ -108,6 +111,14 @@ for theta2 = 0:1:360
     F = A\B;
     
     M{theta2 + 1} = F;
+
+    shaking_x = F(1, 1) + F(5, 1)*cosd(theta3);
+    shaking_y = F(2, 1) + F(5, 1)*sind(theta3);
+    shaking_mag = sqrt(shaking_x^2 + shaking_y^2);
+    shaking_angle = atan2d(shaking_y, shaking_x);
+
+    shaking_moment = F(5, 1)*cosd(theta3)*0.12 + F(5, 1)*sind(theta3)*0.04 + F(6, 1);
+    
     % Store data in predeclared arrays
     % NOTE: You need to fill in the brackets of the function calls to match the
     %       values inside the function files themselves. Otherwise, the code will
@@ -120,7 +131,7 @@ for theta2 = 0:1:360
     %F32_list = [F32; x];
     
 end
-% 
+
 % % Plot all desired deliverables:
 % x = 0 : 1 : 360;
 % axis auto;
