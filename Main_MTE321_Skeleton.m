@@ -81,6 +81,11 @@ for theta2 = 0:1:360
 
     vo3x = -0.05*dtheta2*sind(theta2) - 0.10*dtheta3*sind(theta3);
     vo3y = 0.05*dtheta2*cosd(theta2) + 0.10*dtheta3*cosd(theta3);
+    
+    ag2x = -0.025*(dtheta2^2)*cosd(theta2);
+    ag2y = -0.025*(dtheta2^2)*sind(theta2);
+    ag3x = -0.05*(dtheta2^2)*cosd(theta2) - 0.1*(dtheta3^2)*cosd(theta3) - 0.1*ddtheta3*sind(dtheta3);
+    ag3y = -0.05*(dtheta2^2)*sind(theta2) - 0.1*(dtheta3^2)*sind(theta3) + 0.1*ddtheta3*cosd(dtheta3);
 
     a2y = -0.025*(dtheta2^2)*sind(theta2);
     a2x = -0.025*(dtheta2^2)*cosd(theta2);
@@ -92,7 +97,9 @@ for theta2 = 0:1:360
     a3x_list(theta2+1) = a3x;
     a3y_list(theta2+1) = a3y;
     
-    Io = 35.3 * 10^-6;
+    Io = 5.33 * 10^-5;
+    m2 = 0.00265;
+    m3 = 0.016;
 
     %r3 = ;
     %dr3 = ;
@@ -101,13 +108,13 @@ for theta2 = 0:1:360
     % you dont have to type it all out here. But you are free to do as you
     % wish.
 
-    B = [0.00265*a2x; 0.00265*a2y; 0; 0.0106*a3x; 0.0106*a3y; Io*ddtheta3];
+    B = [m2*ag2x; m2*ag2y; 0; m3*ag3x; m3*ag3y; Io*ddtheta3];
     A = [-1 0 1 0 0 0;
          0 -1 0 1 0 0;
          0 0 -0.05*sind(theta2) 0.05*cosd(theta2) 0 1;
-         0 0 -1 0 -cosd(theta3) 0;
-         0 0 0 -1 -sind(theta3) 0;
-         0 0 -0.10*sind(theta3) -0.10*cosd(theta3) 2*sind(theta3)*cosd(theta3)*(r3-0.1) 0
+         0 0 -1 0 cosd(theta3 - 90) 0;
+         0 0 0 -1 sind(theta3 - 90) 0;
+         0 0 -0.10*sind(theta3) 0.10*cosd(theta3) (r3-0.1)*cosd(theta3)*sind(theta3-90)-(r3-0.1)*sind(theta3)*cosd(theta3-90) 0
         ];
 
     %B = get_ma_vector();
