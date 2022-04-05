@@ -52,6 +52,7 @@ M12_list = zeros(1, 360);
 
 for theta2 = 0:1:360
     
+    % Eqns of angles and C for part A and B
     theta3 = atan2d((0.12-0.05*sind(theta2)), (0.04-0.05*cosd(theta2)));
 
     ro3x = 0.05*cosd(theta2) + 0.10*cosd(theta3);
@@ -75,10 +76,8 @@ for theta2 = 0:1:360
     ddCy_list(theta2 +1) = -0.05*(dtheta2^2)*sind(theta2) - 0.20*(dtheta3^2)*sind(theta3) + 0.20*ddtheta3*cosd(theta3);
 
     dR3 = 0.05*dtheta2*sind(theta2 - theta3);
-   
-    % Enter the variables you want to calculated at every iteration
-    % eg:
-
+    
+    % Eqns for part C
     vo3x = -0.05*dtheta2*sind(theta2) - 0.10*dtheta3*sind(theta3);
     vo3y = 0.05*dtheta2*cosd(theta2) + 0.10*dtheta3*cosd(theta3);
     
@@ -86,28 +85,12 @@ for theta2 = 0:1:360
     ag2y = -0.025*(dtheta2^2)*sind(theta2);
     ag3x = -0.05*(dtheta2^2)*cosd(theta2) - 0.1*(dtheta3^2)*cosd(theta3) - 0.1*ddtheta3*sind(dtheta3);
     ag3y = -0.05*(dtheta2^2)*sind(theta2) - 0.1*(dtheta3^2)*sind(theta3) + 0.1*ddtheta3*cosd(dtheta3);
-
-    a2y = -0.025*(dtheta2^2)*sind(theta2);
-    a2x = -0.025*(dtheta2^2)*cosd(theta2);
-    a3x = -0.05*(dtheta2^2)*cosd(theta2) - 0.10*(dtheta3^2)*cosd(theta3) - 0.10*ddtheta3*sind(theta3);
-    a3y = -0.05*(dtheta2^2)*sind(theta2) - 0.10*(dtheta3^2)*sind(theta3) + 0.10*ddtheta3*cosd(theta3);
-
-    a2x_list(theta2+1) = a2x;
-    a2y_list(theta2+1) = a2y;
-    a3x_list(theta2+1) = a3x;
-    a3y_list(theta2+1) = a3y;
     
     Io = 5.33 * 10^-5;
     m2 = 0.00265;
     m3 = 0.016;
 
-    %r3 = ;
-    %dr3 = ;
-    
-    % You might want to consider using functions to find A and ma so that
-    % you dont have to type it all out here. But you are free to do as you
-    % wish.
-
+    % Solving Force matrix using Eqns from above
     B = [m2*ag2x; m2*ag2y; 0; m3*ag3x; m3*ag3y; Io*ddtheta3];
     A = [-1 0 1 0 0 0;
          0 -1 0 1 0 0;
@@ -117,8 +100,6 @@ for theta2 = 0:1:360
          0 0 -0.10*sind(theta3) 0.10*cosd(theta3) (r3-0.1)*cosd(theta3)*sind(theta3-90)-(r3-0.1)*sind(theta3)*cosd(theta3-90) 0
         ];
 
-    %B = get_ma_vector();
-    %A = get_A_matrix(); 
     F = A\B;
     
     M{theta2 + 1} = F;
@@ -129,34 +110,23 @@ for theta2 = 0:1:360
     F23y_list(theta2 + 1) = F(4, 1);
     F13_list(theta2 + 1) = F(5, 1);
     M12_list(theta2 + 1) = F(6, 1);
-
+    
+    % Shaking force/moment Eqns for part D
     shaking_x = F(5, 1)*cosd(theta3-90) - F(1,1);
     shaking_y = F(5, 1)*sind(theta3-90) - F(2,1);
     shaking_force(theta2 + 1) = sqrt(shaking_x^2 + shaking_y^2);
     shaking_angle = atan2d(shaking_y, shaking_x);
 
-
     shaking_moment(theta2 + 1) = F(6, 1) - F(5, 1)*cosd(theta3-90)*0.12 - F(5, 1)*sind(theta3-90)*0.04;
-    
-    % Store data in predeclared arrays
-    % NOTE: You need to fill in the brackets of the function calls to match the
-    %       values inside the function files themselves. Otherwise, the code will
-    %       throw errors.
-    
-    %M12 = [M12; x(1)];
-    %Fs = [Fs; get_shaking_force_Fs(x, x, x, x)];
-    %alpha_s = [alpha_s,get_direction_of_shaking_force_alpha_s(x, x, x, x)];
-    %Ms = [Ms; get_shaking_moment_Ms(r1, r4)];
-    %F32_list = [F32; x];
     
 end
 
-% % Plot all desired deliverables:
+% Plot all desired deliverables:
 x = 0 : 1 : 360;
 axis auto;
 grid on;
 figure_num = 1;
-% % Part A, Displacement, Linear Velocity and Linear Accelerations of C
+% Part A, Displacement, Linear Velocity and Linear Accelerations of C
 
 figure(figure_num);
 plot3(x, Cx_list, Cy_list);
@@ -271,10 +241,3 @@ title("Shaking Moment -vs- \theta_2");
 grid on;
 xlabel('\theta_2  [degree]')
 ylabel('Shaking Moment  [N*m]')
-
-%figure (2)
-%plot(theta2_list,M12)
-%grid on;
-%title('\theta_2 vs M12')
-%xlabel('\theta_2   unit: degree')
-%ylabel('M12   unit: N-m')
