@@ -130,13 +130,13 @@ for theta2 = 0:1:360
     F13_list(theta2 + 1) = F(5, 1);
     M12_list(theta2 + 1) = F(6, 1);
 
-    shaking_x = F(1, 1) + F(5, 1)*cosd(theta3);
-    shaking_y = F(2, 1) + F(5, 1)*sind(theta3);
+    shaking_x = F(5, 1)*cosd(theta3-90) - F(1,1);
+    shaking_y = F(5, 1)*sind(theta3-90) - F(2,1);
     shaking_force(theta2 + 1) = sqrt(shaking_x^2 + shaking_y^2);
     shaking_angle = atan2d(shaking_y, shaking_x);
 
 
-    shaking_moment(theta2 + 1) = F(5, 1)*cosd(theta3)*0.12 + F(5, 1)*sind(theta3)*0.04 - F(6, 1);
+    shaking_moment(theta2 + 1) = F(6, 1) - F(5, 1)*cosd(theta3-90)*0.12 - F(5, 1)*sind(theta3-90)*0.04;
     
     % Store data in predeclared arrays
     % NOTE: You need to fill in the brackets of the function calls to match the
@@ -174,7 +174,7 @@ grid on;
 legend('C_x', 'C_y'); 
 title("Linear Velocity of C -vs- \theta_2");
 xlabel('\theta_2  [degree]')
-ylabel('Linear Velocity [units?]')
+ylabel('Linear Velocity [m/s]')
 
 figure_num = figure_num + 1;
 figure(figure_num);
@@ -183,7 +183,7 @@ legend('C_x', 'C_y');
 title("Linear Acceleration of C -vs- \theta_2");
 grid on;
 xlabel('\theta_2  [degree]')
-ylabel('Linear Accelerattion [units?]')
+ylabel('Linear Accelerattion [m/s^2]')
 
 
 % Part B, Angular Velocity and Angular Acceleration of link 3,
@@ -193,7 +193,7 @@ plot(x, dtheta3_list);
 title("Angular Velocity of Link 3 -vs- \theta_2");
 grid on;
 xlabel('\theta_2  [degree]')
-ylabel('d\theta_3  [?]')
+ylabel('d\theta_3  [rad/s]')
 
 
 figure_num = figure_num + 1;
@@ -202,7 +202,7 @@ plot(x, ddtheta3_list);
 title("Angular Acceleration of Link 3 -vs- \theta_2");
 grid on;
 xlabel('\theta_2  [degree]')
-ylabel('dd\theta_3  [?]')
+ylabel('dd\theta_3  [rad/s^2]')
 
 
 % Part C
@@ -256,21 +256,21 @@ ylabel('M12  [N]')
 
 
 % Part D
-% figure_num = figure_num + 1;
-% figure(figure_num);
-% plot(x, shaking_force);
-% title("Shaking Force -vs- \theta_2");
-% grid on;
-% xlabel('\theta_2  [degree]')
-% ylabel('Shaking Force  [N]')
-% 
-% figure_num = figure_num + 1;
-% figure(figure_num);
-% plot(x, shaking_moment);
-% title("Shaking Moment -vs- \theta_2");
-% grid on;
-% xlabel('\theta_2  [degree]')
-% ylabel('Shaking Moment  [N*m]')
+figure_num = figure_num + 1;
+figure(figure_num);
+plot(x, shaking_force);
+title("Shaking Force -vs- \theta_2");
+grid on;
+xlabel('\theta_2  [degree]')
+ylabel('Shaking Force  [N]')
+
+figure_num = figure_num + 1;
+figure(figure_num);
+plot(x, shaking_moment);
+title("Shaking Moment -vs- \theta_2");
+grid on;
+xlabel('\theta_2  [degree]')
+ylabel('Shaking Moment  [N*m]')
 
 %figure (2)
 %plot(theta2_list,M12)
