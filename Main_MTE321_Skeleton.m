@@ -1,16 +1,14 @@
-%% Project 2
+% MTE 321 Project 2:
+% Kinematic Analysis of Rotational Mechanism
+% By: Ryan Chen, Jeremy Phy, Jackie Zhu
+% Submitted April 5, 2022
 
-%% Hi Class,
-%% Hope you have fun with this project. Please note that this skeleton is only 
-%% meant to serve as a guidance. If you want to rewrite the code from scratch, you are most
-%% welcome. Creativity is highly encouraged. 
 
-% Enter all independant variables in appropriate units
-% eg r2, ddtheta2, Ig:
+% Independant variables in appropriate units
 dtheta2 = 40;
 ddtheta2 = 0;
 
-% Initialize arrays to collect desired values as needed
+% Initialize arrays to collect desired values
 M12 = [];
 Cx_list = zeros(1, 360);
 Cy_list = zeros(1, 360);
@@ -42,17 +40,10 @@ M12_list = zeros(1, 360);
 
 
 
-% Might want to use the loop to iterate through the values of theta to 
-% find the required deliverables for all angles:
-
-% NOTE: The teaching team chose to use a loop to run through the several theta 
-%       values, and to use functuion calls to do the required operations. You 
-%       can choose not to use either. You may get the same results, but the code
-%       may be harder to look through or debug. Do whatever works best for you!  
-
+% Iterate through the values of theta to find the required for all angles:
 for theta2 = 0:1:360
     
-    % Eqns of angles and C for part A and B
+    % Part A and B) Eqns of angles and C's displacement
     theta3 = atan2d((0.12-0.05*sind(theta2)), (0.04-0.05*cosd(theta2)));
 
     ro3x = 0.05*cosd(theta2) + 0.10*cosd(theta3);
@@ -77,7 +68,7 @@ for theta2 = 0:1:360
 
     dR3 = 0.05*dtheta2*sind(theta2 - theta3);
     
-    % Eqns for part C
+    % Part C:
     vo3x = -0.05*dtheta2*sind(theta2) - 0.10*dtheta3*sind(theta3);
     vo3y = 0.05*dtheta2*cosd(theta2) + 0.10*dtheta3*cosd(theta3);
     
@@ -121,13 +112,13 @@ for theta2 = 0:1:360
     
 end
 
-% Plot all desired deliverables:
+% Plot all deliverables:
 x = 0 : 1 : 360;
 axis auto;
 grid on;
 figure_num = 1;
-% Part A, Displacement, Linear Velocity and Linear Accelerations of C
 
+% Part A, Displacement, Linear Velocity and Linear Accelerations of C
 figure(figure_num);
 plot3(x, Cx_list, Cy_list);
 grid on;
@@ -175,7 +166,7 @@ xlabel('\theta_2  [degree]')
 ylabel('dd\theta_3  [rad/s^2]')
 
 
-% Part C
+% Part C =====
 figure_num = figure_num + 1;
 figure(figure_num);
 plot(x, F12x_list);
@@ -225,7 +216,7 @@ xlabel('\theta_2  [degree]')
 ylabel('M12  [N]')
 
 
-% Part D
+% Part D =====
 figure_num = figure_num + 1;
 figure(figure_num);
 plot(x, shaking_force);
